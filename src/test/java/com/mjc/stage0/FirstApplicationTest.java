@@ -33,7 +33,7 @@ public class FirstApplicationTest {
                 .map(Object::toString)
                 .collect(Collectors.joining("\n"));
 
-        List<String> requiredElements = List.of("System.out.println", "Hello World!");
+        List<String> requiredElements = List.of("System.out.println", "Hello, World!");
         requiredElements.forEach(el ->
                 assertTrue(result.contains(el), String.format("'%s' should be used", el))
         );
