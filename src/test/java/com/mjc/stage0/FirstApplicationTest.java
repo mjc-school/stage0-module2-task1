@@ -22,7 +22,7 @@ public class FirstApplicationTest {
 
     @Test
     @JavaFileSource("src/main/java/com/mjc/stage0/FirstApplication.java")
-    public void dummyTest(CompilationUnit parsed) {
+    public void verifyOutput(CompilationUnit parsed) {
         MethodDeclaration main = findMain(parsed);
 
         int helloWorldSouts = main.findAll(MethodCallExpr.class,
