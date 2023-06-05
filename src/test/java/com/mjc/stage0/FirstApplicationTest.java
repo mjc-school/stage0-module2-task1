@@ -1,41 +1,42 @@
 package com.mjc.stage0;
 
+import com.github.javaparser.ast.CompilationUnit;
+import com.github.javaparser.ast.body.MethodDeclaration;
+import com.github.javaparser.ast.expr.MethodCallExpr;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import school.mjc.test.ArgumentResolver;
+import school.mjc.test.JavaFileSource;
 
-import java.io.IOException;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.List;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static school.mjc.parser.Asserts.assertNoClassesExceptTopLevel;
+import static school.mjc.parser.Asserts.assertNoImports;
+import static school.mjc.parser.Asserts.assertNoInitializationBlocks;
+import static school.mjc.parser.Asserts.assertNoMethodsExceptMain;
+import static school.mjc.parser.predicate.Dsl.findMain;
+import static school.mjc.parser.predicate.Dsl.sout;
+import static school.mjc.parser.predicate.Dsl.stringLiteral;
 
-import static java.nio.file.Files.readAllLines;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-
+@ExtendWith(ArgumentResolver.class)
 public class FirstApplicationTest {
-    private static Stream<?> getFileLines(Path sourcePath) {
-        try {
-            return readAllLines(sourcePath, StandardCharsets.UTF_8).stream();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        return Stream.empty();
+
+    @Test
+    @JavaFileSource("src/main/java/com/mjc/stage0/FirstApplication.java")
+    public void verifyOutput(CompilationUnit parsed) {
+        MethodDeclaration main = findMain(parsed);
+
+        int helloWorldSouts = main.findAll(MethodCallExpr.class,
+                sout().withArgument(stringLiteral("Hello, World!"))).size();
+        assertEquals(1, helloWorldSouts,
+                "Could not find System.out.println with \"Hello, World!\" argument");
     }
 
     @Test
-    public void dummyTest() throws IOException {
-        String result = Files.walk(Paths.get("src/main/java/com/mjc/stage0"))
-                .filter(Files::isRegularFile)
-                .filter(p -> p.toString().endsWith(".java"))
-                .flatMap(FirstApplicationTest::getFileLines)
-                .map(Object::toString)
-                .collect(Collectors.joining("\n"));
-
-        List<String> requiredElements = List.of("System.out.println", "Hello, World!");
-        requiredElements.forEach(el ->
-                assertTrue(result.contains(el), String.format("'%s' should be used", el))
-        );
+    @JavaFileSource("src/main/java/com/mjc/stage0/FirstApplication.java")
+    public void verifyNoForbiddenCode(CompilationUnit parsed) {
+        assertNoImports(parsed);
+        assertNoInitializationBlocks(parsed);
+        assertNoMethodsExceptMain(parsed);
+        assertNoClassesExceptTopLevel(parsed, "FirstApplication");
     }
 }
