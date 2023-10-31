@@ -1,6 +1,7 @@
-
-public class Main {
-    public static void main(String[] args){
+public class FirstApplication {
+    public static void FirstApplication(String[] args)
+    {
         System.out.println("Hello, World!");
+
     }
 }
