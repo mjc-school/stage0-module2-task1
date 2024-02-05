@@ -65,6 +65,6 @@ tasks.register('checksum') {
                 task: 'Task 1',
                 testFiles: testFiles
         ]
-        new File(projectDir, "payload.json").text = new JsonOutput().toJson(payload)
+        new File(projectDir, "stage0-module2-task1.json").text = new JsonOutput().toJson(payload)
     }
 }
