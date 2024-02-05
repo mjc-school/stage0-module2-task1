@@ -1,4 +1,4 @@
-package com.mjc.stage0;
+package school.mjc.stage0;
 
 import com.github.javaparser.ast.CompilationUnit;
 import com.github.javaparser.ast.body.MethodDeclaration;
@@ -21,7 +21,7 @@ import static school.mjc.parser.predicate.Dsl.stringLiteral;
 public class FirstApplicationTest {
 
     @Test
-    @JavaFileSource("src/main/java/com/mjc/stage0/FirstApplication.java")
+    @JavaFileSource("src/main/java/school/mjc/stage0/FirstApplication.java")
     public void verifyOutput(CompilationUnit parsed) {
         MethodDeclaration main = findMain(parsed);
 
@@ -32,7 +32,7 @@ public class FirstApplicationTest {
     }
 
     @Test
-    @JavaFileSource("src/main/java/com/mjc/stage0/FirstApplication.java")
+    @JavaFileSource("src/main/java/school/mjc/stage0/FirstApplication.java")
     public void verifyNoForbiddenCode(CompilationUnit parsed) {
         assertNoImports(parsed);
         assertNoInitializationBlocks(parsed);

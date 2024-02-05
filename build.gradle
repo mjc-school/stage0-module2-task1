@@ -1,0 +1,65 @@
+import groovy.json.JsonOutput
+
+import java.nio.file.Files
+import org.apache.commons.codec.digest.DigestUtils
+
+buildscript {
+    repositories {
+        mavenCentral();
+    }
+    dependencies {
+        classpath('commons-codec:commons-codec:1.16.0')
+    }
+}
+
+plugins {
+    id 'java'
+}
+
+group = 'school.mjc'
+version = '1.0.0'
+
+repositories {
+    mavenCentral()
+    maven {
+        url = uri('https://jitpack.io')
+    }
+}
+
+dependencies {
+    implementation('com.github.javaparser:javaparser-core:3.25.1')
+    implementation('com.github.mjc-school:parser-shared:1.0.2')
+
+    testImplementation('org.junit.jupiter:junit-jupiter-engine:5.9.2')
+}
+
+test {
+    useJUnitPlatform()
+}
+
+tasks.register('checksum') {
+    var testSrcProvider = sourceSets.named("test")
+    if (testSrcProvider.isPresent()) {
+        var testSrc = testSrcProvider.get()
+        var testFiles = []
+        testSrc.allJava.srcDirs.forEach {
+            Files.walk(it.toPath())
+                .forEach {
+                    if (!Files.isDirectory(it)) {
+                        var absolutePath = it.toAbsolutePath().toString()
+                        var filename = absolutePath.substring(absolutePath.indexOf("src"))
+                            .replaceAll("\\\\", "/")
+
+                        def checksum = [
+                                filename: filename,
+                                checksum: DigestUtils.md5Hex(Files.newInputStream(it))
+                        ]
+                        testFiles.add(checksum)
+                    }
+                }
+        }
+
+        println(new JsonOutput().toJson(testFiles))
+        new File(projectDir, "checksum.json").text = new JsonOutput().toJson(testFiles)
+    }
+}
