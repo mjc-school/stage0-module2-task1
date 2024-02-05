@@ -59,7 +59,12 @@ tasks.register('checksum') {
                 }
         }
 
-        println(new JsonOutput().toJson(testFiles))
-        new File(projectDir, "checksum.json").text = new JsonOutput().toJson(testFiles)
+        var payload = [
+                stage: 'Stage 0',
+                module: 'Module 2',
+                task: 'Task 1',
+                testFiles: testFiles
+        ]
+        new File(projectDir, "payload.json").text = new JsonOutput().toJson(payload)
     }
 }
