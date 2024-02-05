@@ -6,12 +6,23 @@ on:
 jobs:
   build-gradle-project:
     runs-on: ubuntu-latest
+    permissions:
+      id-token: write
+      contents: read
     steps:
       - name: Checkout project sources
-        uses: actions/checkout@v3
+        uses: actions/checkout@main
       - name: Setup Gradle
         uses: gradle/gradle-build-action@v2
       - name: Run build with Gradle Wrapper
         run: ./gradlew checksum
       - name: List files
         run: ls -lrta
+      - name: Configure AWS CLI
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: arn:aws:iam::764439458017:role/github-actions
+          aws-region: eu-central-1
+      - name: Copy Files to S3
+        run: |
+          aws s3 sync checksum s3://tests-checksums
